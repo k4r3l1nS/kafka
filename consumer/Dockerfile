@@ -1,4 +1,9 @@
-FROM ubuntu:latest
-LABEL authors="dtechs"
+FROM openjdk:17-jdk-alpine
 
-ENTRYPOINT ["top", "-b"]
+WORKDIR /app
+
+# Копирование JAR-файла в контейнер
+COPY consumer/build/libs/consumer-0.0.1-SNAPSHOT.jar consumer.jar
+
+# Команда для запуска JAR-файла
+CMD ["java", "-jar", "consumer.jar"]

@@ -1,4 +1,4 @@
-package io.dtechs.consumer.config;
+package io.dtechs.consumer.kafka.config;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.TopicPartition;
@@ -27,9 +27,7 @@ public class KafkaConfiguration {
     private Integer CONCURRENCY;
 
     @Bean
-    public KafkaTemplate<Object, Object> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory);
-    }
+    public KafkaTemplate<Object, Object> kafkaTemplate() { return new KafkaTemplate<>(producerFactory); }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<Object, Object> kafkaListenerContainerFactory(

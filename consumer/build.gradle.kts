@@ -26,6 +26,10 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.kafka:spring-kafka")
 	implementation ("com.fasterxml.jackson.core:jackson-databind")
+
+	platform("com.amazonaws:aws-java-sdk-bom:1.12.367")
+	implementation("com.amazonaws:aws-java-sdk-s3:1.12.367")
+
 	compileOnly("org.projectlombok:lombok")
 	annotationProcessor("org.projectlombok:lombok")
 	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")

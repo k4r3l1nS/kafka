@@ -1,4 +1,4 @@
-package io.dtechs.consumer.config;
+package io.dtechs.consumer.kafka.config;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
