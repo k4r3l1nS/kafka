@@ -1,5 +1,7 @@
 version: '3.9'
+
 services:
+
   zookeeper:
     container_name: zookeeper
     image: confluentinc/cp-zookeeper:latest
@@ -50,12 +52,21 @@ services:
       - kafka
 
   prometheus:
-    image: "bitnami/prometheus:latest"
+    image: "prom/prometheus:latest"
     depends_on:
       - kafka
+      - jmx-exporter
     ports:
       - "9090:9090"
     container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  jmx-exporter:
+    image: sscaling/jmx-prometheus-exporter:latest
+    container_name: jmx-exporter
+    ports:
+      - "5556:5556"
 
   minio:
     image: bitnami/minio:latest

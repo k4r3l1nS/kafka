@@ -15,7 +15,7 @@ public class MyService {
 
     public void send10kMessages() {
 
-        for (int messageCount = 0; messageCount < 10; ++messageCount) {
+        for (int messageCount = 0; messageCount < 10000; ++messageCount) {
             System.out.println("!!! SENDING " + (messageCount + 1) + " MESSAGE !!!");
 
             String fileName = "file" + messageCount;
