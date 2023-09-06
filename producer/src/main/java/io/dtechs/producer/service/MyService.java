@@ -15,26 +15,31 @@ public class MyService {
 
     public void send10kMessages() {
 
-        for (int messageCount = 0; messageCount < 10000; ++messageCount) {
-            System.out.println("!!! SENDING " + (messageCount + 1) + " MESSAGE !!!");
+        try {
+            for (int messageCount = 0; messageCount < 1000; ++messageCount) {
+                System.out.println("!!! SENDING " + (messageCount + 1) + " MESSAGE !!!");
 
-            String fileName = "file" + messageCount;
-            String topic;
-            if (messageCount % 3 == 0) {
-                topic = "video";
-                fileName += ".mp4";
-            } else if (messageCount % 2 == 0) {
-                topic = "photo";
-                fileName += ".jpg";
-            } else {
-                topic = "text";
-                fileName += ".txt";
+                String fileName = "file" + messageCount;
+                String topic;
+                if (messageCount % 3 == 0) {
+                    topic = "video";
+                    fileName += ".mp4";
+                } else if (messageCount % 2 == 0) {
+                    topic = "photo";
+                    fileName += ".jpg";
+                } else {
+                    topic = "text";
+                    fileName += ".txt";
+                }
+                File file = File.createTempFile("file" + messageCount + "_",
+                        fileName.substring(fileName.length() - 4));
+
+                kafkaSender.sendMessage(topic, MessageDto.builder()
+                        .file(file)
+                        .build());
             }
-            File file = new File(fileName);
-
-            kafkaSender.sendMessage(topic, MessageDto.builder()
-                    .file(file)
-                    .build());
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 }

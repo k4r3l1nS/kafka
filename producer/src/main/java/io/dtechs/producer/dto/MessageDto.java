@@ -11,5 +11,6 @@ import java.io.File;
 @Builder
 public class MessageDto {
 
+
     private File file;
 }

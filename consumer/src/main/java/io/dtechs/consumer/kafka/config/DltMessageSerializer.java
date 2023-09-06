@@ -9,7 +9,7 @@ import org.apache.kafka.common.serialization.Serializer;
 
 import java.util.Map;
 
-public class DtlMessageSerializer<T> implements Serializer<T> {
+public class DltMessageSerializer<T> implements Serializer<T> {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

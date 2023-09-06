@@ -1,8 +1,8 @@
 package io.dtechs.consumer.kafka;
 
+import io.dtechs.consumer.dto.MessageDto;
 import io.dtechs.consumer.service.StorageService;
 import lombok.RequiredArgsConstructor;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -33,13 +30,11 @@ public class KafkaListeners {
     @KafkaListener(
             topics = "${kafka.topic.photos}",
             containerFactory = "kafkaListenerContainerFactory"
-    ) public void handlePhoto(ConsumerRecord object) throws IOException {
+    ) public void handlePhoto(MessageDto messageDto) {
 
-        Map dtoHashMap = (LinkedHashMap) object.value();
+        File file = messageDto.getFile();
 
-        File file = File.createTempFile(dtoHashMap.get("file").toString().substring(0, 4), ".jpg");
-
-        System.out.println("Обращаемся к чему-нибудь и записываем фото в хранилище");
+        System.out.println("Фото");
         System.out.println("key = " + file.getName() + "\n");
 
         storageService.saveIfNotExists(photoBucket, file);
@@ -48,13 +43,11 @@ public class KafkaListeners {
     @KafkaListener(
             topics = "${kafka.topic.videos}",
             containerFactory = "kafkaListenerContainerFactory"
-    ) public void handleVideo(ConsumerRecord object) throws IOException {
+    ) public void handleVideo(MessageDto messageDto) {
 
-        Map dtoHashMap = (LinkedHashMap) object.value();
+        File file = messageDto.getFile();
 
-        File file = File.createTempFile(dtoHashMap.get("file").toString().substring(0, 4), ".mp4");
-
-        System.out.println("Обращаемся к чему-нибудь и записываем видео в хранилище");
+        System.out.println("Видео");
         System.out.println("key = " + file.getName() + "\n");
 
         storageService.saveIfNotExists(videoBucket, file);
@@ -62,13 +55,11 @@ public class KafkaListeners {
 
     @KafkaListener(topics = "${kafka.topic.text}",
             containerFactory = "kafkaListenerContainerFactory"
-    ) public void handleText(ConsumerRecord object) throws IOException {
+    ) public void handleText(MessageDto messageDto) {
 
-        Map dtoHashMap = (LinkedHashMap) object.value();
+        File file = messageDto.getFile();
 
-        File file = File.createTempFile(dtoHashMap.get("file").toString().substring(0, 4), ".txt");
-
-        System.out.println("Обращаемся к чему-нибудь и записываем текст в хранилище");
+        System.out.println("Текст");
         System.out.println("key = " + file.getName() + "\n");
 
         storageService.saveIfNotExists(textBucket, file);

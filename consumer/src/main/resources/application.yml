@@ -23,8 +23,8 @@ spring:
       keyDeserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       valueDeserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
     properties:
-      spring.json.value.default.type: java.lang.Object
-#      spring.json.value.default.type: io.dtechs.consumer.dto.MessageDto
+#      spring.json.value.default.type: java.lang.Object
+      spring.json.value.default.type: io.dtechs.consumer.dto.MessageDto
       spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
       spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
 kafka:
