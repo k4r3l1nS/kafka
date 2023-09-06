@@ -32,6 +32,8 @@ kafka:
     photos: photo
     videos: video
     text: text
+    overall: overall
+    dlq: dlq
   concurrency : 4
 
 storage:
@@ -43,6 +45,10 @@ storage:
     photos: photo
     videos: video
     text: text
+    photos_overall: photo-overall
+    videos_overall: video-overall
+    text_overall: text-overall
+    dlq: dlq
 
 server:
   port: 8081

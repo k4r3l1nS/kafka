@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +35,13 @@ public class MyService {
                 File file = File.createTempFile("file" + messageCount + "_",
                         fileName.substring(fileName.length() - 4));
 
-                kafkaSender.sendMessage(topic, MessageDto.builder()
-                        .file(file)
-                        .build());
+                var messageDto = MessageDto.builder()
+                                .file(file)
+                        .id(Math.abs(ThreadLocalRandom.current().nextLong()))
+                        .build();
+
+                kafkaSender.sendMessage(topic, messageDto);
+                kafkaSender.sendMessage("overall", messageDto);
             }
         } catch (Exception ex) {
             ex.printStackTrace();

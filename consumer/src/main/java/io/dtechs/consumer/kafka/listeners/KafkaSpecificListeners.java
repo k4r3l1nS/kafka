@@ -1,4 +1,4 @@
-package io.dtechs.consumer.kafka;
+package io.dtechs.consumer.kafka.listeners;
 
 import io.dtechs.consumer.dto.MessageDto;
 import io.dtechs.consumer.service.StorageService;
@@ -13,7 +13,7 @@ import java.io.File;
 @Component
 @RequiredArgsConstructor
 @EnableKafka
-public class KafkaListeners {
+public class KafkaSpecificListeners {
 
     private final StorageService storageService;
 
@@ -31,10 +31,14 @@ public class KafkaListeners {
             containerFactory = "kafkaListenerContainerFactory"
     ) public void handlePhoto(MessageDto messageDto) {
 
+        if (messageDto.getId() % 10 == 0)
+            throw new RuntimeException("IiIIIiiilIlIIliilIiIIliII");
+
         File file = messageDto.getFile();
 
         System.out.println("Фото");
-        System.out.println("key = " + file.getName() + "\n");
+        System.out.println("key = " + file.getName());
+        System.out.println("id = " + messageDto.getId() + "\n");
 
         storageService.saveIfNotExists(photoBucket, file);
     }
@@ -44,10 +48,14 @@ public class KafkaListeners {
             containerFactory = "kafkaListenerContainerFactory"
     ) public void handleVideo(MessageDto messageDto) {
 
+        if (messageDto.getId() % 10 == 0)
+            throw new RuntimeException("IiIIIiiilIlIIliilIiIIliII");
+
         File file = messageDto.getFile();
 
         System.out.println("Видео");
-        System.out.println("key = " + file.getName() + "\n");
+        System.out.println("key = " + file.getName());
+        System.out.println("id = " + messageDto.getId() + "\n");
 
         storageService.saveIfNotExists(videoBucket, file);
     }
@@ -56,10 +64,14 @@ public class KafkaListeners {
             containerFactory = "kafkaListenerContainerFactory"
     ) public void handleText(MessageDto messageDto) {
 
+        if (messageDto.getId() % 10 == 0)
+            throw new RuntimeException("IiIIIiiilIlIIliilIiIIliII");
+
         File file = messageDto.getFile();
 
         System.out.println("Текст");
-        System.out.println("key = " + file.getName() + "\n");
+        System.out.println("key = " + file.getName());
+        System.out.println("id = " + messageDto.getId() + "\n");
 
         storageService.saveIfNotExists(textBucket, file);
     }
