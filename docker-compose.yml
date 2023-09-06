@@ -17,6 +17,7 @@ services:
     depends_on:
       - zookeeper
       - minio
+      - kafka-exporter
     ports:
       - "29092:29092"
     environment:
@@ -65,8 +66,18 @@ services:
   jmx-exporter:
     image: sscaling/jmx-prometheus-exporter:latest
     container_name: jmx-exporter
+    restart: always
     ports:
       - "5556:5556"
+
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:latest
+    container_name: kafka-exporter
+    restart: always
+    ports:
+      - "9308:9308"
+    command:
+      - "--kafka.server=kafka:29092"
 
   minio:
     image: bitnami/minio:latest

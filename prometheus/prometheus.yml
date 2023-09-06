@@ -15,3 +15,9 @@ scrape_configs:
       - targets: ['jmx-exporter:5556']
         labels:
           group: 'jmx'
+
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['kafka-exporter:9308']
+        labels:
+          group: 'kafka'
