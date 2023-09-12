@@ -7,12 +7,7 @@ spring:
       # Настраиваем сериализацию сообщений
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        spring:
-          json:
-            add:
-              type:
-                headers: false
+      # Добавляем транзакционность продюсера
       transaction-id-prefix: "prod-${random.uuid}-"
 
 kafka:

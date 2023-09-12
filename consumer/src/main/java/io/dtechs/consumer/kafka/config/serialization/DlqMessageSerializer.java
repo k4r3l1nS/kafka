@@ -1,4 +1,4 @@
-package io.dtechs.consumer.kafka.config;
+package io.dtechs.consumer.kafka.config.serialization;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -29,7 +29,7 @@ public class DlqMessageSerializer<T> implements Serializer<T> {
 
     @Override
     public byte[] serialize(String topic, Headers headers, T data) {
-        return Serializer.super.serialize(topic, headers, data);
+        return serialize(topic, data);
     }
 
     @Override
