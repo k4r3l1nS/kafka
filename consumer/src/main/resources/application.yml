@@ -13,17 +13,21 @@ spring:
     producer:
       client-id: ${spring.application.name}
       # Очередь для исключений
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.dtechs.consumer.kafka.config.DlqMessageSerializer
       retries: 3
+      transaction-id-prefix: tx-
     consumer:
       group-id: ${spring.application.name}
       autoOffsetReset: earliest
       # Сериализаторы для всех типов
       keyDeserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       valueDeserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      # Транзакционность консьюмера
+      isolation-level: read_committed
     properties:
-#      spring.json.value.default.type: java.lang.Object
+      spring.json.add.type.info.headers: false
+      spring.json.trusted.packages: "*"
       spring.json.value.default.type: io.dtechs.consumer.dto.MessageDto
       spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
       spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer

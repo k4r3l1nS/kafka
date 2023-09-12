@@ -13,3 +13,8 @@ spring:
             add:
               type:
                 headers: false
+      transaction-id-prefix: "prod-${random.uuid}-"
+
+kafka:
+  topic:
+    common: overall

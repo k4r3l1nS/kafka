@@ -12,13 +12,15 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.kafka.transaction.KafkaTransactionManager;
 
 @Configuration
 @EnableKafka
 @RequiredArgsConstructor
 public class KafkaConfiguration {
 
-    private final ProducerFactory<Object, Object> producerFactory;
+//    private final ProducerFactory<Object, Object> producerFactory;
+
     private final ConsumerFactory<Object, Object> consumerFactory;
 
     @Value("${kafka.concurrency}")
@@ -27,18 +29,26 @@ public class KafkaConfiguration {
     @Value("${kafka.topic.dlq}")
     private String DLQ_TOPIC;
 
-    @Bean
-    public KafkaTemplate<Object, Object> kafkaTemplate() { return new KafkaTemplate<>(producerFactory); }
+//    @Bean
+//    public KafkaTemplate<Object, Object> kafkaTemplate() {return new KafkaTemplate<>(producerFactory);}
+
+//    @Bean
+//    public KafkaTransactionManager<Object, Object> kafkaTransactionManager() {
+//        return new KafkaTransactionManager<>(producerFactory);
+//    }
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<Object, Object> kafkaListenerContainerFactory(
             DefaultErrorHandler errorHandler
+//            KafkaTransactionManager<Object, Object> kafkaTransactionManager
     ) {
         ConcurrentKafkaListenerContainerFactory<Object, Object> kafkaListenerContainerFactory = new ConcurrentKafkaListenerContainerFactory<>();
 
         kafkaListenerContainerFactory.setConsumerFactory(consumerFactory);
         kafkaListenerContainerFactory.setCommonErrorHandler(errorHandler);
         kafkaListenerContainerFactory.setConcurrency(CONCURRENCY);
+//        kafkaListenerContainerFactory.getContainerProperties().setTransactionManager(kafkaTransactionManager);
+        kafkaListenerContainerFactory.setBatchListener(true);
 
         return kafkaListenerContainerFactory;
     }

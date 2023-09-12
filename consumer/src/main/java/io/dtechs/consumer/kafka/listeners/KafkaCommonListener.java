@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 
@@ -22,7 +23,9 @@ public class KafkaCommonListener {
     @KafkaListener(
             topics = "${kafka.topic.overall}",
             containerFactory = "kafkaListenerContainerFactory"
-    ) public void handleFile(MessageDto messageDto) {
+    )
+    @Transactional
+    public void handleFile(MessageDto messageDto) {
 
         if (messageDto.getId() % 10 == 0)
             throw new RuntimeException("IiIIIiiilIlIIliilIiIIliII");

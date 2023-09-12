@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 
@@ -21,15 +22,18 @@ public class KafkaDlqListener {
     private String dlqBucket;
 
     @KafkaListener(
-            topics = "${kafka.topic.dlq}"
-    ) public void dlqHandler(MessageDto messageDto) {
+            topics = "${kafka.topic.dlq}",
+            containerFactory = "kafkaListenerContainerFactory"
+    )
+    @Transactional
+    public void dlqHandler(MessageDto messageDto) {
 
         File file = messageDto.getFile();
 
         System.out.println("----- DLQ ELEMENT -----");
         System.out.println("dlq bucket");
         System.out.println("key = " + file.getName());
-        System.out.println("id = " + messageDto.getId() + "\n");
+        System.out.println("id = " + messageDto.getId());
         System.out.println("----- DLQ ELEMENT -----\n");
 
         storageService.saveIfNotExists(dlqBucket, file);

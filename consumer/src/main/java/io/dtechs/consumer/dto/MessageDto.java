@@ -10,6 +10,7 @@ import java.io.File;
 public class MessageDto {
 
     private Long id;
+
     private File file;
 
     public MessageDto() {}

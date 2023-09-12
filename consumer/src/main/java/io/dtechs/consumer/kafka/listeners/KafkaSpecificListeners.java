@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 
@@ -29,7 +30,9 @@ public class KafkaSpecificListeners {
     @KafkaListener(
             topics = "${kafka.topic.photos}",
             containerFactory = "kafkaListenerContainerFactory"
-    ) public void handlePhoto(MessageDto messageDto) {
+    )
+    @Transactional
+    public void handlePhoto(MessageDto messageDto) {
 
         if (messageDto.getId() % 10 == 0)
             throw new RuntimeException("IiIIIiiilIlIIliilIiIIliII");
@@ -46,7 +49,9 @@ public class KafkaSpecificListeners {
     @KafkaListener(
             topics = "${kafka.topic.videos}",
             containerFactory = "kafkaListenerContainerFactory"
-    ) public void handleVideo(MessageDto messageDto) {
+    )
+    @Transactional
+    public void handleVideo(MessageDto messageDto) {
 
         if (messageDto.getId() % 10 == 0)
             throw new RuntimeException("IiIIIiiilIlIIliilIiIIliII");
@@ -62,7 +67,9 @@ public class KafkaSpecificListeners {
 
     @KafkaListener(topics = "${kafka.topic.text}",
             containerFactory = "kafkaListenerContainerFactory"
-    ) public void handleText(MessageDto messageDto) {
+    )
+    @Transactional
+    public void handleText(MessageDto messageDto) {
 
         if (messageDto.getId() % 10 == 0)
             throw new RuntimeException("IiIIIiiilIlIIliilIiIIliII");
