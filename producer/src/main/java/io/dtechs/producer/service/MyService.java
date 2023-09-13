@@ -1,9 +1,9 @@
 package io.dtechs.producer.service;
 
+import io.dtechs.producer.clients.TopicSorterClient;
 import io.dtechs.producer.dto.MessageDto;
 import io.dtechs.producer.kafka.KafkaSender;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -14,9 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MyService {
 
     private final KafkaSender kafkaSender;
-
-    @Value("${kafka.topic.common}")
-    private String COMMON_TOPIC;
+    private final TopicSorterClient topicSorterClient;
 
     public void send10kMessages() {
 
@@ -25,15 +23,11 @@ public class MyService {
                 System.out.println("!!! SENDING " + (messageCount + 1) + " MESSAGE !!!");
 
                 String fileName = "file" + messageCount;
-                String topic;
                 if (messageCount % 3 == 0) {
-                    topic = "video";
                     fileName += ".mp4";
                 } else if (messageCount % 2 == 0) {
-                    topic = "photo";
                     fileName += ".jpg";
                 } else {
-                    topic = "text";
                     fileName += ".txt";
                 }
                 File file = File.createTempFile("file" + messageCount + "_",
@@ -42,10 +36,18 @@ public class MyService {
                 var messageDto = MessageDto.builder()
                                 .file(file)
                         .id(Math.abs(ThreadLocalRandom.current().nextLong()))
+                        .version(Math.abs(ThreadLocalRandom.current().nextLong()) % 10 == 0 ?
+                                MessageDto.Version.V2 : MessageDto.Version.V1)
                         .build();
 
-                kafkaSender.sendMessage(topic, messageDto);
-                kafkaSender.sendMessage(COMMON_TOPIC, messageDto);
+                try {
+                    var topic = topicSorterClient.getTopicByFilename(
+                            messageDto.getFile().getName()
+                    );
+                    kafkaSender.sendMessage(topic, messageDto);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         } catch (Exception ex) {
             ex.printStackTrace();

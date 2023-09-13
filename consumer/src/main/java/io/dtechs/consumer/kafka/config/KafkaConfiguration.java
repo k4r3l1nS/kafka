@@ -27,8 +27,8 @@ public class KafkaConfiguration {
     @Value("${kafka.concurrency}")
     private Integer CONCURRENCY;
 
-    @Value("${kafka.topic.dlq}")
-    private String DLQ_TOPIC;
+    @Value("${kafka.topic.dlq-prefix}")
+    private String DLQ_PREFIX;
 
 //    @Bean
 //    public KafkaTemplate<Object, Object> kafkaTemplate() {return new KafkaTemplate<>(producerFactory);}
@@ -68,6 +68,6 @@ public class KafkaConfiguration {
             KafkaTemplate<Object, Object> bytesTemplate
     ) {
         return new DeadLetterPublishingRecoverer(bytesTemplate, ((consumerRecord, ex) ->
-                new TopicPartition(DLQ_TOPIC, consumerRecord.partition())));
+                new TopicPartition(DLQ_PREFIX + consumerRecord.topic(), consumerRecord.partition())));
     }
 }

@@ -4,14 +4,9 @@ import com.amazonaws.services.s3.AmazonS3;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.kafka.core.KafkaTemplate;
 
 @SpringBootTest
 public class ClearStorage {
-
-    @MockBean
-    private KafkaTemplate<Object, Object> kafkaTemplate;
 
     @Autowired
     private AmazonS3 amazonS3;

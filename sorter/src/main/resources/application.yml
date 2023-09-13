@@ -1,0 +1,8 @@
+kafka:
+  topic:
+    photos: photo
+    videos: video
+    text: text
+
+server:
+  port: 8082

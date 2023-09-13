@@ -12,6 +12,8 @@ import java.io.File;
 public class MessageDto {
 
     private Long id;
-
     private File file;
+    private Version version;
+
+    public enum Version {V1, V2}
 }

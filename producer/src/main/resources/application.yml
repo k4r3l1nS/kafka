@@ -1,15 +1,14 @@
 spring:
   kafka:
-    # Перечисляем всех наших брокеров
     bootstrap-servers:
       - localhost:29092
     producer:
+      retries: 1
       # Настраиваем сериализацию сообщений
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       # Добавляем транзакционность продюсера
       transaction-id-prefix: "prod-${random.uuid}-"
 
-kafka:
-  topic:
-    common: overall
+topic-sorter:
+  url: "http://localhost:8082"
