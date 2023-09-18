@@ -1,6 +1,6 @@
-package io.dtechs.producer.kafka;
+package io.dtechs.sorter.kafka.sender;
 
-import io.dtechs.producer.dto.MessageDto;
+import io.dtechs.sorter.dto.MessageDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;

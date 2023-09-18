@@ -1,4 +1,4 @@
-package io.dtechs.consumer.kafka.config;
+package io.dtechs.sorter.kafka.config;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.common.TopicPartition;
@@ -9,8 +9,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
-import org.springframework.kafka.listener.DefaultErrorHandler;
+import org.springframework.kafka.listener.*;
 
 @Configuration
 @EnableKafka
@@ -19,8 +18,8 @@ public class KafkaConfiguration {
 
     private final ConsumerFactory<Object, Object> consumerFactory;
 
-    @Value("${kafka.topic.dlq-prefix}")
-    private String DLQ_PREFIX;
+    @Value("${kafka.topic.dlq}")
+    private String DLQ_TOPIC;
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<Object, Object> kafkaListenerContainerFactory(
@@ -30,7 +29,7 @@ public class KafkaConfiguration {
 
         kafkaListenerContainerFactory.setConsumerFactory(consumerFactory);
         kafkaListenerContainerFactory.setCommonErrorHandler(errorHandler);
-        kafkaListenerContainerFactory.setBatchListener(true);
+//        kafkaListenerContainerFactory.setBatchListener(true);
 
         return kafkaListenerContainerFactory;
     }
@@ -49,6 +48,6 @@ public class KafkaConfiguration {
             KafkaTemplate<Object, Object> bytesTemplate
     ) {
         return new DeadLetterPublishingRecoverer(bytesTemplate, ((consumerRecord, ex) ->
-                new TopicPartition(DLQ_PREFIX + consumerRecord.topic(), consumerRecord.partition())));
+                new TopicPartition(DLQ_TOPIC, consumerRecord.partition())));
     }
 }

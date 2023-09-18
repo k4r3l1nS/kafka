@@ -1,14 +1,17 @@
 spring:
+  application:
+    name: producer
   kafka:
     bootstrap-servers:
       - localhost:29092
     producer:
       retries: 1
-      # Настраиваем сериализацию сообщений
+      # Сериализация сообщений
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      # Добавляем транзакционность продюсера
-      transaction-id-prefix: "prod-${random.uuid}-"
+      # Транзакционность продюсера
+      transaction-id-prefix: ${spring.application.name}-${random.uuid}-
 
-topic-sorter:
-  url: "http://localhost:8082"
+kafka:
+  topic:
+    common: common

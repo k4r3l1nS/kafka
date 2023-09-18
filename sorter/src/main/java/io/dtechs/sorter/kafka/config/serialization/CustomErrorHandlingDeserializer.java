@@ -1,4 +1,4 @@
-package io.dtechs.consumer.kafka.config.serialization;
+package io.dtechs.sorter.kafka.config.serialization;
 
 import org.apache.kafka.common.header.Headers;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
@@ -7,6 +7,8 @@ public class CustomErrorHandlingDeserializer<T> extends ErrorHandlingDeserialize
 
     @Override
     public T deserialize(String topic, Headers headers, byte[] data) {
-        return super.deserialize(topic, data);
+
+        headers.remove("__TypeId__");
+        return super.deserialize(topic, headers, data);
     }
 }

@@ -1,4 +1,4 @@
-package io.dtechs.consumer.dto;
+package io.dtechs.sorter.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,8 +1,50 @@
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  application:
+    name: sorter
+  kafka:
+    # Адреса всех брокеров кластера
+    bootstrap-servers:
+      - localhost:29092
+    listener:
+      # Получение каждой записи должно быть подтверждено
+      ack-mode: record
+    producer:
+      retries: 1
+      client-id: ${spring.application.name}
+      # Очередь для исключений
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.dtechs.sorter.kafka.config.serialization.DlqMessageSerializer
+      transaction-id-prefix: ${spring.application.name}-${random.uuid}-
+    consumer:
+      group-id: ${spring.application.name}
+      autoOffsetReset: earliest
+      # Сериализаторы для всех типов
+      keyDeserializer: io.dtechs.sorter.kafka.config.serialization.CustomErrorHandlingDeserializer
+      valueDeserializer: io.dtechs.sorter.kafka.config.serialization.CustomErrorHandlingDeserializer
+      # Транзакционность консьюмера
+      isolation-level: read_committed
+      properties:
+#        check-deser-ex-when-key-null: false
+        spring:
+          json:
+            trusted:
+              packages: "*"
+    properties:
+      spring.json.value.default.type: io.dtechs.sorter.dto.MessageDto
+      spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+      spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+
 kafka:
   topic:
     photos: photo
     videos: video
     text: text
+    common: common
+    dlq: dlq_invalid
+  message:
+    supported-version: V1
 
 server:
   port: 8082

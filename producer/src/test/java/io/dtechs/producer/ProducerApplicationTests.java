@@ -1,6 +1,6 @@
 package io.dtechs.producer;
 
-import io.dtechs.producer.service.MyService;
+import io.dtechs.producer.service.MessageGeneratorService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class ProducerApplicationTests {
 
 	@Autowired
-	private MyService myService;
+	private MessageGeneratorService messageGeneratorService;
 
 	@Test
 	void contextLoads() {
@@ -17,6 +17,6 @@ class ProducerApplicationTests {
 
 	@Test
 	public void sendMessages() {
-		myService.send10kMessages();
+		messageGeneratorService.sendMessages();
 	}
 }

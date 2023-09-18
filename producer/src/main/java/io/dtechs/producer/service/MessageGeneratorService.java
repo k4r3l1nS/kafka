@@ -1,9 +1,9 @@
 package io.dtechs.producer.service;
 
-import io.dtechs.producer.clients.TopicSorterClient;
 import io.dtechs.producer.dto.MessageDto;
 import io.dtechs.producer.kafka.KafkaSender;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -11,15 +11,17 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
-public class MyService {
+public class MessageGeneratorService {
 
     private final KafkaSender kafkaSender;
-    private final TopicSorterClient topicSorterClient;
 
-    public void send10kMessages() {
+    @Value("${kafka.topic.common}")
+    private String COMMON_TOPIC;
+
+    public void sendMessages() {
 
         try {
-            for (int messageCount = 0; messageCount < 100; ++messageCount) {
+            for (int messageCount = 0; messageCount < 10000; ++messageCount) {
                 System.out.println("!!! SENDING " + (messageCount + 1) + " MESSAGE !!!");
 
                 String fileName = "file" + messageCount;
@@ -34,20 +36,14 @@ public class MyService {
                         fileName.substring(fileName.length() - 4));
 
                 var messageDto = MessageDto.builder()
-                                .file(file)
+                        .file(file)
                         .id(Math.abs(ThreadLocalRandom.current().nextLong()))
                         .version(Math.abs(ThreadLocalRandom.current().nextLong()) % 10 == 0 ?
                                 MessageDto.Version.V2 : MessageDto.Version.V1)
+//                        .version(MessageDto.Version.V1)
                         .build();
 
-                try {
-                    var topic = topicSorterClient.getTopicByFilename(
-                            messageDto.getFile().getName()
-                    );
-                    kafkaSender.sendMessage(topic, messageDto);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
+                kafkaSender.sendTransactionalMessage(COMMON_TOPIC, messageDto);
             }
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -4,14 +4,12 @@ import io.dtechs.consumer.dto.MessageDto;
 import io.dtechs.consumer.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-@EnableKafka
 public class KafkaDlqListeners {
 
     private final StorageService storageService;
