@@ -17,6 +17,7 @@ services:
     depends_on:
       - zookeeper
       - minio
+    restart: always
     ports:
       - "29092:29092"
     environment:
@@ -44,15 +45,38 @@ services:
       - kafka
 
   grafana:
-    image: "grafana/grafana-enterprise"
+    image: "grafana/grafana-enterprise:latest"
     depends_on:
       - prometheus
+#      - influxdb
     container_name: grafana
-    restart: unless-stopped
+    restart: always
     ports:
       - "3000:3000"
     links:
       - kafka
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: secureadmin
+
+  influxdb:
+    image: "influxdb:latest"
+    container_name: influxdb
+    restart: always
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-storage:/var/lib/influxdb
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: influxdb
+      DOCKER_INFLUXDB_INIT_PASSWORD: influxdb
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: 897f0cae-57c2-11ee-8c99-0242ac120002
+      DOCKER_INFLUXDB_INIT_ORG: dtechs
+      DOCKER_INFLUXDB_INIT_BUCKET: default
+
 
   prometheus:
     image: "prom/prometheus:latest"
@@ -63,15 +87,6 @@ services:
     container_name: prometheus
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-
-  jmx-exporter:
-    image: sscaling/jmx-prometheus-exporter:latest
-    container_name: jmx-exporter
-    restart: always
-    ports:
-      - "5556:5556"
-    links:
-      - prometheus
 
   kafka-exporter:
     depends_on:
@@ -99,25 +114,9 @@ services:
 
 
 volumes:
+  grafana-storage:
+    external: true
+  influxdb-storage:
+    external: true
   kafka_data:
     driver: local
-
-
-    #  producer:
-    #    container_name: producer
-    #    depends_on:
-    #      - consumer
-    #    build:
-    #      context: .
-    #      dockerfile: producer/Dockerfile
-    #    ports:
-    #      - "8080:8080"
-
-    #  consumer:
-    #    container_name: consumer
-    #    depends_on:
-    #      - producer
-    #      - kafka
-    #    build:
-    #      context: .
-    #      dockerfile: consumer/Dockerfile
