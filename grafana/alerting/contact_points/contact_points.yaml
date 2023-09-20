@@ -1,0 +1,67 @@
+apiVersion: 1
+contactPoints:
+    - orgId: 1
+      name: grafana-critical-telegram
+      receivers:
+        - uid: a494a251-ee4f-4a0a-8cd8-d29d867e69df
+          type: telegram
+          settings:
+            bottoken: 6481089325:AAFhF7QfNY-rxn5FS59oG4wi5PwwFwyG4oI
+            chatid: "-1001535990449"
+            disable_notification: false
+            message: "---------- ВНИМАНИЕ ----------\nТопик common критически перегружен (10к+ сообщений). Требуется незамедлительная обработка топика с помощью дополнительных сервисов! \n---------- ВНИМАНИЕ ---------- "
+            parse_mode: HTML
+          disableResolveMessage: true
+    - orgId: 1
+      name: grafana-kafka-is-down-telegram
+      receivers:
+        - uid: f096f85c-74c7-477e-b7ae-cdc1b777eceb
+          type: telegram
+          settings:
+            bottoken: 6481089325:AAFhF7QfNY-rxn5FS59oG4wi5PwwFwyG4oI
+            chatid: "-1001535990449"
+            disable_notification: false
+            message: |-
+                ---------- ERROR ----------
+
+                Kafka не работает
+
+                ---------- ERROR ----------
+            parse_mode: HTML
+          disableResolveMessage: true
+    - orgId: 1
+      name: grafana-kafka-is-up-telegram
+      receivers:
+        - uid: a7ce58d0-3d03-49be-9f79-fd4f7c16e468
+          type: telegram
+          settings:
+            bottoken: 6481089325:AAFhF7QfNY-rxn5FS59oG4wi5PwwFwyG4oI
+            chatid: "-1001535990449"
+            disable_notification: false
+            message: Kafka is up!
+            parse_mode: HTML
+          disableResolveMessage: true
+    - orgId: 1
+      name: grafana-ok-telegram
+      receivers:
+        - uid: c764aab1-e4fd-4fb2-acd1-755528f3c894
+          type: telegram
+          settings:
+            bottoken: 6481089325:AAFhF7QfNY-rxn5FS59oG4wi5PwwFwyG4oI
+            chatid: "-1001535990449"
+            disable_notification: false
+            message: Топик common получил 1 - 1000 сообщений за последние 15 секунд. Дополнительная обработка топика не требуется
+            parse_mode: HTML
+          disableResolveMessage: true
+    - orgId: 1
+      name: grafana-warn-telegram
+      receivers:
+        - uid: a8fb2bc4-2757-422c-b825-452d6db6ed35
+          type: telegram
+          settings:
+            bottoken: 6481089325:AAFhF7QfNY-rxn5FS59oG4wi5PwwFwyG4oI
+            chatid: "-1001535990449"
+            disable_notification: false
+            message: Топик common имеет 1000+ необработанных сообщений. Рассмотрите возможность поднять дополнительные микросервисы для его обработки
+            parse_mode: HTML
+          disableResolveMessage: true

@@ -1,0 +1,318 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: TopicRules
+      folder: TopicRules
+      interval: 10s
+      rules:
+        - uid: f0a250cc-c407-4471-a786-d0b96ddecd44
+          title: Topic is overloaded
+          condition: C
+          data:
+            - refId: E
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: ad4f7be7-edea-41c7-8add-c7a7c63dd28e
+              model:
+                datasource:
+                    type: prometheus
+                    uid: ad4f7be7-edea-41c7-8add-c7a7c63dd28e
+                disableTextWrap: false
+                editorMode: builder
+                expr: sum by(topic) (kafka_consumergroup_lag{topic="common"})
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: E
+                useBackend: false
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1000
+                            - 10000
+                        type: within_range
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: E
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: e478c3cf-b8af-4f3a-a5cd-529e472a8987
+          panelId: 1
+          noDataState: OK
+          execErrState: Error
+          for: 10s
+          annotations:
+            __dashboardUid__: e478c3cf-b8af-4f3a-a5cd-529e472a8987
+            __panelId__: "1"
+          labels:
+            state: warn
+          isPaused: false
+        - uid: f4c8c094-093b-44cc-b764-cde302005d31
+          title: Topic overload is in OK range
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: ad4f7be7-edea-41c7-8add-c7a7c63dd28e
+              model:
+                disableTextWrap: false
+                editorMode: builder
+                expr: sum by(topic) (kafka_consumergroup_lag{topic="common"})
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+                useBackend: false
+            - refId: C
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1
+                            - 1000
+                        type: within_range
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          for: 10s
+          labels:
+            state: ok
+          isPaused: false
+        - uid: b6ba5735-ef12-4ac4-89de-994c8e0a4eaa
+          title: Topic is critically overloaded
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: ad4f7be7-edea-41c7-8add-c7a7c63dd28e
+              model:
+                disableTextWrap: false
+                editorMode: builder
+                expr: sum by(topic) (kafka_consumergroup_lag{topic="common"})
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+                useBackend: false
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 10000
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: OK
+          execErrState: Error
+          for: 10s
+          labels:
+            state: critical
+          isPaused: false
+    - orgId: 1
+      name: KafkaState
+      folder: KafkaState
+      interval: 10s
+      rules:
+        - uid: c172d010-c032-42f2-9327-62a8b590f82c
+          title: Kafka is down
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: ad4f7be7-edea-41c7-8add-c7a7c63dd28e
+              model:
+                disableTextWrap: false
+                editorMode: builder
+                expr: kafka_broker_info
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+                useBackend: false
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                        type: lt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: Alerting
+          execErrState: Error
+          for: 1m
+          labels:
+            state: down
+          isPaused: false
+        - uid: fb1115b2-864c-4dec-9e0e-33f984960462
+          title: Kafka is up
+          condition: B
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: ad4f7be7-edea-41c7-8add-c7a7c63dd28e
+              model:
+                disableTextWrap: false
+                editorMode: builder
+                expr: kafka_broker_info
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+                useBackend: false
+            - refId: D
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: ad4f7be7-edea-41c7-8add-c7a7c63dd28e
+              model:
+                datasource:
+                    type: prometheus
+                    uid: ad4f7be7-edea-41c7-8add-c7a7c63dd28e
+                disableTextWrap: false
+                editorMode: builder
+                expr: sum_over_time(kafka_broker_info[1m])
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: D
+                useBackend: false
+            - refId: B
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: avg
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: ($A > 0) && ($D <= 3)
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: B
+                type: math
+          noDataState: OK
+          execErrState: Error
+          for: 10s
+          labels:
+            state: up
+          isPaused: false

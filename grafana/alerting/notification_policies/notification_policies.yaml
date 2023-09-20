@@ -1,0 +1,35 @@
+apiVersion: 1
+policies:
+    - orgId: 1
+      receiver: grafana-warn-telegram
+      group_by:
+        - grafana_folder
+        - alertname
+      routes:
+        - receiver: grafana-ok-telegram
+          object_matchers:
+            - - state
+              - =
+              - ok
+        - receiver: grafana-warn-telegram
+          object_matchers:
+            - - state
+              - =
+              - warn
+        - receiver: grafana-critical-telegram
+          object_matchers:
+            - - state
+              - =
+              - critical
+        - receiver: grafana-kafka-is-down-telegram
+          object_matchers:
+            - - state
+              - =
+              - down
+        - receiver: grafana-kafka-is-up-telegram
+          object_matchers:
+            - - state
+              - =
+              - up
+      group_wait: 1s
+      group_interval: 1s

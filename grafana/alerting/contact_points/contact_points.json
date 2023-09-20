@@ -1,0 +1,173 @@
+{
+  "template_files": {},
+  "template_file_provenances": {},
+  "alertmanager_config": {
+    "route": {
+      "receiver": "grafana-ok-state-telegram",
+      "group_by": [
+        "grafana_folder",
+        "alertname"
+      ],
+      "routes": [
+        {
+          "receiver": "grafana-load-ok-telegram",
+          "object_matchers": [
+            [
+              "load",
+              "=",
+              "ok"
+            ]
+          ]
+        },
+        {
+          "receiver": "grafana-load-warn-telegram",
+          "object_matchers": [
+            [
+              "load",
+              "=",
+              "warn"
+            ]
+          ],
+          "repeat_interval": "5m"
+        },
+        {
+          "receiver": "grafana-load-critical-telegram",
+          "object_matchers": [
+            [
+              "load",
+              "=",
+              "critical"
+            ]
+          ],
+          "repeat_interval": "1m"
+        },
+        {
+          "receiver": "grafana-ok-state-telegram",
+          "object_matchers": [
+            [
+              "state",
+              "=",
+              "up"
+            ]
+          ]
+        },
+        {
+          "receiver": "grafana-down-state-telegram",
+          "object_matchers": [
+            [
+              "state",
+              "=",
+              "down"
+            ]
+          ],
+          "repeat_interval": "1m"
+        }
+      ],
+      "group_wait": "1s",
+      "group_interval": "1s",
+      "repeat_interval": "9999w"
+    },
+    "templates": null,
+    "receivers": [
+      {
+        "name": "grafana-ok-state-telegram",
+        "grafana_managed_receiver_configs": [
+          {
+            "uid": "f90387e2-8c52-4e76-9546-f058b7dbf23d",
+            "name": "grafana-ok-state-telegram",
+            "type": "telegram",
+            "disableResolveMessage": true,
+            "settings": {
+              "chatid": "-1001535990449",
+              "parse_mode": "HTML",
+              "disable_notification": false,
+              "message": "Kafka работает в штатном режиме!"
+            },
+            "secureFields": {
+              "bottoken": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "grafana-down-state-telegram",
+        "grafana_managed_receiver_configs": [
+          {
+            "uid": "b668d488-b571-4373-983d-250b90df91e0",
+            "name": "grafana-down-state-telegram",
+            "type": "telegram",
+            "disableResolveMessage": false,
+            "settings": {
+              "chatid": "-1001535990449",
+              "disable_notification": false,
+              "message": "---------- ERROR ----------\n\n!!! Kafka не работает !!!\n\n---------- ERROR ----------"
+            },
+            "secureFields": {
+              "bottoken": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "grafana-load-ok-telegram",
+        "grafana_managed_receiver_configs": [
+          {
+            "uid": "c0d6a946-8032-4050-a2bf-2ed83b70ff2a",
+            "name": "grafana-load-ok-telegram",
+            "type": "telegram",
+            "disableResolveMessage": true,
+            "settings": {
+              "chatid": "-1001535990449",
+              "parse_mode": "HTML",
+              "disable_notification": false,
+              "message": "Топик common имеет 1 - 1000 необработанных сообщений. Дополнительная \"помощь\" топику не требуется"
+            },
+            "secureFields": {
+              "bottoken": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "grafana-load-warn-telegram",
+        "grafana_managed_receiver_configs": [
+          {
+            "uid": "c71ef76a-2f50-4a8d-8b7c-a45255accc1b",
+            "name": "grafana-load-warn-telegram",
+            "type": "telegram",
+            "disableResolveMessage": true,
+            "settings": {
+              "chatid": "-1001535990449",
+              "parse_mode": "HTML",
+              "disable_notification": false,
+              "message": "Топик common имеет 1000+ необработанных сообщений. Рассмотрите возможность поднять дополнительные микросервисы для его обработки"
+            },
+            "secureFields": {
+              "bottoken": true
+            }
+          }
+        ]
+      },
+      {
+        "name": "grafana-load-critical-telegram",
+        "grafana_managed_receiver_configs": [
+          {
+            "uid": "b8a8f6a9-3fa8-40eb-9d33-048fdbb1c125",
+            "name": "grafana-load-critical-telegram",
+            "type": "telegram",
+            "disableResolveMessage": true,
+            "settings": {
+              "chatid": "-1001535990449",
+              "parse_mode": "HTML",
+              "disable_notification": false,
+              "message": "---------- ВНИМАНИЕ ----------\n\nТопик common критически перегружен (10к+ сообщений). Требуется незамедлительная обработка топика с помощью дополнительных сервисов!\n\n---------- ВНИМАНИЕ ----------"
+            },
+            "secureFields": {
+              "bottoken": true
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
