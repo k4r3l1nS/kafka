@@ -26,11 +26,12 @@ public class KafkaConfiguration {
     public ConcurrentKafkaListenerContainerFactory<Object, Object> kafkaListenerContainerFactory(
             DefaultErrorHandler errorHandler
     ) {
-        ConcurrentKafkaListenerContainerFactory<Object, Object> kafkaListenerContainerFactory = new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<Object, Object> kafkaListenerContainerFactory =
+                new ConcurrentKafkaListenerContainerFactory<>();
 
         kafkaListenerContainerFactory.setConsumerFactory(consumerFactory);
         kafkaListenerContainerFactory.setCommonErrorHandler(errorHandler);
-        kafkaListenerContainerFactory.setBatchListener(true);
+//        kafkaListenerContainerFactory.setBatchListener(true);
 
         return kafkaListenerContainerFactory;
     }

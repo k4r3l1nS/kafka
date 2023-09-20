@@ -18,10 +18,12 @@ public class MessageGeneratorService {
     @Value("${kafka.topic.common}")
     private String COMMON_TOPIC;
 
+    private static final int NUMBER_OF_MESSAGES = 2000;
+
     public void sendMessages() {
 
         try {
-            for (int messageCount = 0; messageCount < 10000; ++messageCount) {
+            for (int messageCount = 0; messageCount < NUMBER_OF_MESSAGES; ++messageCount) {
                 System.out.println("!!! SENDING " + (messageCount + 1) + " MESSAGE !!!");
 
                 String fileName = "file" + messageCount;

@@ -15,3 +15,6 @@ spring:
 kafka:
   topic:
     common: common
+
+server:
+  port: 8080
