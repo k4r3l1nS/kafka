@@ -1,4 +1,4 @@
-package io.dtechs.consumer;
+package io.dtechs.consumer.storage;
 
 import com.amazonaws.services.s3.AmazonS3;
 import org.junit.jupiter.api.Test;

@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+
+  grafana:
+    image: "grafana/grafana-enterprise:latest"
+    depends_on:
+      - prometheus
+      - influxdb
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: secureadmin
+
+  influxdb:
+    image: "influxdb:latest"
+    container_name: influxdb
+    restart: always
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-storage:/var/lib/influxdb
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: influxdb
+      DOCKER_INFLUXDB_INIT_PASSWORD: influxdb
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: 897f0cae-57c2-11ee-8c99-0242ac120002
+      DOCKER_INFLUXDB_INIT_ORG: dtechs
+      DOCKER_INFLUXDB_INIT_BUCKET: default
+
+  prometheus:
+    image: "prom/prometheus:latest"
+    ports:
+      - "9090:9090"
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+volumes:
+  grafana-storage:
+    external: true
+  influxdb-storage:
+    external: true
