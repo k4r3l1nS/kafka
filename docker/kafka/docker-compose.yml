@@ -16,7 +16,7 @@ services:
     container_name: kafka
     depends_on:
       - zookeeper
-    restart: always
+      - minio
     ports:
       - "29092:29092"
     environment:
@@ -28,12 +28,6 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-    healthcheck:
-      test: curl --fail http://localhost || exit 1
-      interval: 60s
-      retries: 3
-      start_period: 60s
-      timeout: 10s
 
   kafka-ui:
     image: "provectuslabs/kafka-ui:latest"
@@ -49,6 +43,36 @@ services:
     links:
       - kafka
 
+  grafana:
+    image: "grafana/grafana-enterprise"
+    depends_on:
+      - prometheus
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    links:
+      - kafka
+
+  prometheus:
+    image: "prom/prometheus:latest"
+    depends_on:
+      - kafka
+    ports:
+      - "9090:9090"
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  jmx-exporter:
+    image: sscaling/jmx-prometheus-exporter:latest
+    container_name: jmx-exporter
+    restart: always
+    ports:
+      - "5556:5556"
+    links:
+      - prometheus
+
   kafka-exporter:
     depends_on:
       - kafka
@@ -61,7 +85,39 @@ services:
       - "--kafka.server=kafka:9092"
     links:
       - kafka
+      - prometheus
+
+  minio:
+    image: bitnami/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+
 
 volumes:
   kafka_data:
     driver: local
+
+
+    #  producer:
+    #    container_name: producer
+    #    depends_on:
+    #      - consumer
+    #    build:
+    #      context: .
+    #      dockerfile: producer/Dockerfile
+    #    ports:
+    #      - "8080:8080"
+
+    #  consumer:
+    #    container_name: consumer
+    #    depends_on:
+    #      - producer
+    #      - kafka
+    #    build:
+    #      context: .
+    #      dockerfile: consumer/Dockerfile
