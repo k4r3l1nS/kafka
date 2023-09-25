@@ -29,11 +29,11 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
     healthcheck:
-      test: curl --fail http://localhost || exit 1
+      test: nc -z kafka 29092 || exit 1
       interval: 20s
       retries: 3
       start_period: 20s
-      timeout: 1m
+      timeout: 20s
 
   kafka-ui:
     image: "provectuslabs/kafka-ui:latest"
@@ -45,6 +45,9 @@ services:
     restart: always
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
+      - AUTH_TYPE=LOGIN_FORM
+      - SPRING_SECURITY_USER_NAME=dtechs
+      - SPRING_SECURITY_USER_PASSWORD=dtechs
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
     links:
       - kafka
