@@ -10,11 +10,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-public class KafkaCommonListeners {
+public class KafkaListeners {
 
     private final TopicSorterService topicSorterService;
     private final CompatibilityChecker compatibilityChecker;
 
+    /**
+     * Обрабатываем объект, попавший в топик, указаный в аннотации @KafkaListener.
+     * Можно применять любую логику. В данном случае выбрасываем исключение, если
+     * объект "битый", отпрявляя его в dead letter queue. Если исключение не выброшено,
+     * перенаправляем сообщение в нужный топик.
+     *
+     * @param messageDto Обрабатываемое сообщение
+     */
     @KafkaListener(
             topics = "${kafka.topic.common}"
     )

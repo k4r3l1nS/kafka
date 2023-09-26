@@ -2,8 +2,9 @@ spring:
   application:
     name: producer
   kafka:
+    # Адреса всех брокеров кластера
     bootstrap-servers:
-      - localhost:29092
+      - http://localhost:29092
     producer:
       retries: 1
       # Сериализация сообщений

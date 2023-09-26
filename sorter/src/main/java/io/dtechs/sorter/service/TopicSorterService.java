@@ -16,7 +16,7 @@ public class TopicSorterService {
     public void sendToSortedTopic(MessageDto messageDto) {
         try {
             var topic = filenameParser.getTopicByFilename(messageDto.getFile().getName());
-            kafkaSender.sendNonTransactionalMessage(topic, messageDto);
+            kafkaSender.sendTransactionalMessage(topic, messageDto);
         } catch (RuntimeException ex) {
             ex.printStackTrace();
             throw ex;

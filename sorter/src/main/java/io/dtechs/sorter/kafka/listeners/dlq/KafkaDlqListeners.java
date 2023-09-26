@@ -8,6 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class KafkaDlqListeners {
 
+    /**
+     * Во время стандартной обработки сообщения было выброшено исключение. Поэтому
+     * сообщение было перенаправлено в этот обработчик. К нему применяется другая
+     * логика. Например, его можно поместить во временное хранилище.
+     *
+     * @param messageDto Полученное сообщение
+     */
     @KafkaListener(
             topics = "${kafka.topic.dlq}"
     )
@@ -17,6 +24,5 @@ public class KafkaDlqListeners {
         System.out.println("----- DLQ ELEMENT -----\n");
         messageDto.printInfo("dlq-common");
         System.out.println("----- DLQ ELEMENT -----\n\n");
-
     }
 }

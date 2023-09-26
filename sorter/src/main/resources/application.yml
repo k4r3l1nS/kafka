@@ -6,7 +6,7 @@ spring:
   kafka:
     # Адреса всех брокеров кластера
     bootstrap-servers:
-      - localhost:29092
+      - http://localhost:29092
     listener:
       # Получение каждой записи должно быть подтверждено
       ack-mode: record
@@ -26,7 +26,6 @@ spring:
       # Транзакционность консьюмера
       isolation-level: read_committed
       properties:
-#        check-deser-ex-when-key-null: false
         spring:
           json:
             trusted:

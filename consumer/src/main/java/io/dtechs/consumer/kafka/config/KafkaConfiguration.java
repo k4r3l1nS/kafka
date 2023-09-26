@@ -22,6 +22,13 @@ public class KafkaConfiguration {
     @Value("${kafka.topic.dlq-prefix}")
     private String DLQ_PREFIX;
 
+    /**
+     * Фабрика листенера сообщений. В ней настраиваются характеристики, связанные с
+     * листенерами Кафки.
+     *
+     * @param errorHandler Обработчик исключений
+     * @return Бин
+     */
     @Bean
     public ConcurrentKafkaListenerContainerFactory<Object, Object> kafkaListenerContainerFactory(
             DefaultErrorHandler errorHandler
@@ -31,11 +38,17 @@ public class KafkaConfiguration {
 
         kafkaListenerContainerFactory.setConsumerFactory(consumerFactory);
         kafkaListenerContainerFactory.setCommonErrorHandler(errorHandler);
-//        kafkaListenerContainerFactory.setBatchListener(true);
 
         return kafkaListenerContainerFactory;
     }
 
+    /**
+     * Бин стандартного обработчика исключений. В нём прописывается логика обработки
+     * исключений при обработке сообщения
+     *
+     * @param deadLetterPublishingRecoverer Бин, восстанавливающий сообщения
+     * @return Бин
+     */
     @Bean
     public DefaultErrorHandler defaultErrorHandler(
             DeadLetterPublishingRecoverer deadLetterPublishingRecoverer
@@ -45,6 +58,13 @@ public class KafkaConfiguration {
         return handler;
     }
 
+    /**
+     * Бин, восстанавливающий сообщение, в результате обработки которого было выброшено
+     * исключение. Именно он перенаправляет сообщение в отработчик dead letter
+     *
+     * @param bytesTemplate Экземпляр KafkaTemplate
+     * @return Бин
+     */
     @Bean
     public DeadLetterPublishingRecoverer deadLetterPublishingRecoverer(
             KafkaTemplate<Object, Object> bytesTemplate
