@@ -1,5 +1,4 @@
 global:
-#  scrape_timeout: 15s
   scrape_interval: 10s
   evaluation_interval: 10s
 
@@ -12,9 +11,6 @@ scrape_configs:
           group: 'prometheus'
 
   - job_name: 'kafka'
-#    tls_config:
-#      insecure_skip_verify: true
-#    scrape_timeout: 10s
     static_configs:
       - targets: ['host.docker.internal:9308']
         labels:
