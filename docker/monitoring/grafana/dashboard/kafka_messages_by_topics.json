@@ -25,7 +25,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ad4f7be7-edea-41c7-8add-c7a7c63dd28e"
+        "uid": "b9b1cc3e-c8b3-44ef-94e3-87308ca6d6e2"
       },
       "fieldConfig": {
         "defaults": {
@@ -123,7 +123,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ad4f7be7-edea-41c7-8add-c7a7c63dd28e"
+        "uid": "b9b1cc3e-c8b3-44ef-94e3-87308ca6d6e2"
       },
       "fieldConfig": {
         "defaults": {
@@ -205,7 +205,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "builder",
-          "expr": "rate(process_cpu_seconds_total{job=\"kafka\"}[$__rate_interval])",
+          "expr": "rate(process_cpu_seconds_total{job=\"kafka\"}[$__rate_interval]) * 100",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "instant": false,
@@ -215,13 +215,13 @@
           "useBackend": false
         }
       ],
-      "title": "CPU usage (time in sec per second)",
+      "title": "CPU usage [%]",
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "ad4f7be7-edea-41c7-8add-c7a7c63dd28e"
+        "uid": "b9b1cc3e-c8b3-44ef-94e3-87308ca6d6e2"
       },
       "fieldConfig": {
         "defaults": {
@@ -332,6 +332,6 @@
   "timezone": "",
   "title": "Kafka messages by topics",
   "uid": "e478c3cf-b8af-4f3a-a5cd-529e472a8987",
-  "version": 9,
+  "version": 3,
   "weekStart": ""
 }
