@@ -45,5 +45,13 @@ kafka:
   message:
     supported-version: V1
 
+storage:
+  url: http://127.0.0.1:9000
+  user: minioadmin
+  password: minioadmin
+  region: ru-central1
+  bucket:
+    dlq: dlq-invalid
+
 server:
   port: 8082
