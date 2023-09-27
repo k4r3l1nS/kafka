@@ -14,5 +14,5 @@ public class ScheduledService {
     private final MessageGeneratorService messageGeneratorService;
 
     @Scheduled(initialDelay = 5000, fixedRate = 1000000)
-    public void sendMessages() { messageGeneratorService.sendMessagesMultithread();}
+    public void sendMessages() { messageGeneratorService.sendMessages(true, true);}
 }

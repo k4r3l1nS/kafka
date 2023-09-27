@@ -17,6 +17,6 @@ class ProducerApplicationTests {
 
 	@Test
 	public void sendMessages() {
-		messageGeneratorService.sendMessages();
+		messageGeneratorService.sendMessages(true, true);
 	}
 }

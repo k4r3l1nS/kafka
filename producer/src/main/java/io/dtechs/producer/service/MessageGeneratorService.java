@@ -1,18 +1,14 @@
 package io.dtechs.producer.service;
 
-import io.dtechs.producer.dto.MessageDto;
 import io.dtechs.producer.kafka.KafkaSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ThreadLocalRandom;
+
+import static io.dtechs.producer.service.units.MessageGenerationUnit.generateMessages;
 
 @Service
 @RequiredArgsConstructor
@@ -23,97 +19,134 @@ public class MessageGeneratorService {
     @Value("${kafka.topic.common}")
     private String COMMON_TOPIC;
 
+    /**
+     * Количество отправляемых сообщений за 1 вызов метода sendMessages()
+     */
     private static final int NUMBER_OF_MESSAGES = 2000000;
 
-    public void sendMessagesMultithread() {
+    /**
+     * Количество сообщений, содержимых в 1 "порции". Необходимо
+     * для обхода ошибки, связанной с недостатком heap memory JVM
+     */
+    private static final int NUMBER_OF_MESSAGES_IN_BATCH = 20;
 
-        var threadPool = Executors.newFixedThreadPool(16);
-        try {
-            var messageList = generateSizedMessages(NUMBER_OF_MESSAGES);
-            for (int index = 0; index < NUMBER_OF_MESSAGES; ++index) {
-                var messageDto = messageList.get(index);
+    /**
+     * Количество потоков в случае необходимости быстрой
+     * отправки сообщений
+     */
+    private static final int NUMBER_OF_THREADS = 20;
+
+    /**
+     * Отправка сообщений
+     *
+     * @param isMultithread Многопоточность отправки
+     * @param isSized Файлы отправляются целиком, обходя хранилище,
+     *                или лишь временные файлы
+     */
+    public void sendMessages(boolean isMultithread, boolean isSized) {
+
+        boolean inBatch = isSized;
+//        if (isSized) {
+//            if (isMultithread) {
+//                sendMessagesMultithread(NUMBER_OF_MESSAGES, isSized, inBatch);
+//            } else {
+//                sendMessagesNonMultithread(NUMBER_OF_MESSAGES, isSized, inBatch);
+//            }
+//        } else {
+//            if (isMultithread) {
+//                sendMessagesMultithread(NUMBER_OF_MESSAGES, isSized, inBatch);
+//            } else {
+//                sendMessagesNonMultithread(NUMBER_OF_MESSAGES, isSized, inBatch);
+//            }
+//        }
+//
+        if (isMultithread) {
+            sendMessagesMultithread(NUMBER_OF_MESSAGES, isSized, inBatch);
+        } else {
+            sendMessagesNonMultithread(NUMBER_OF_MESSAGES, isSized, inBatch);
+        }
+    }
+
+    /**
+     * Отправка сообщений в несколько потоков
+     *
+     * @param messageCount Количество сообщений
+     * @param isSized Файлы отправляются целиком, обходя хранилище,
+     *                или лишь временные файлы
+     * @param inBatch Файлы отправляются порционно или сначала
+     *                полностью генерируются, а уже потом отправляются
+     */
+    private void sendMessagesMultithread(int messageCount, boolean isSized, boolean inBatch) {
+
+        var threadPool = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+        if (!inBatch) {
+            try {
+                var messageList = generateMessages(messageCount, isSized);
+                for (int index = 0; index < messageCount; ++index) {
+                    var messageDto = messageList.get(index);
+                    int finalIndex = index;
+                    CompletableFuture.supplyAsync(
+                            () -> {
+                                kafkaSender.sendTransactionalMessage(COMMON_TOPIC, messageDto);
+                                System.out.println("!!! SENDING " + (finalIndex + 1) + " MESSAGE !!!");
+                                return null;
+                            },
+                            threadPool
+                    );
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            int batchCount = NUMBER_OF_MESSAGES / NUMBER_OF_MESSAGES_IN_BATCH;
+            for (int index = 0; index < batchCount; ++index) {
                 int finalIndex = index;
                 CompletableFuture.supplyAsync(
                         () -> {
-                            kafkaSender.sendTransactionalMessage(COMMON_TOPIC, messageDto);
-                            System.out.println("!!! SENDING " + (finalIndex + 1) + " MESSAGE !!!");
+                            System.out.println("!!! SENDING " + NUMBER_OF_MESSAGES_IN_BATCH * finalIndex + "-" +
+                                    NUMBER_OF_MESSAGES_IN_BATCH * (finalIndex + 1) + " MESSAGES !!!");
+                            sendMessagesNonMultithread(NUMBER_OF_MESSAGES_IN_BATCH, isSized, false);
                             return null;
                         },
                         threadPool
                 );
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
         }
     }
 
-    public void sendMessages() {
+    /**
+     * Отправить сообщения, не прибегая к многопоточности
+     *
+     * @param messageCount Количество отправляемых сообщений
+     * @param inBatch Файлы отправляются порционно или сначала
+     *                полностью генерируются, а уже потом отправляются
+     */
+    private void sendMessagesNonMultithread(int messageCount, boolean isSized, boolean inBatch) {
 
-        try {
-            var messageList = generateSizedMessages(NUMBER_OF_MESSAGES);
-            for (int index = 0; index < NUMBER_OF_MESSAGES; ++index) {
-                System.out.println("!!! SENDING " + (index + 1) + " MESSAGE !!!");
-                var messageDto = messageList.get(index);
-                kafkaSender.sendTransactionalMessage(COMMON_TOPIC, messageDto);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public List<MessageDto> generateSimpleMessages(int messageCount) {
-        List<MessageDto> messageList = new ArrayList<>();
-        try {
-            for (int index = 0; index < messageCount; ++index) {
-                String fileName = "file" + index;
-                if (index % 3 == 0) {
-                    fileName += ".mp4";
-                } else if (index % 2 == 0) {
-                    fileName += ".jpg";
-                } else {
-                    fileName += ".txt";
+        var messageList = generateMessages(messageCount, isSized);
+        if (!inBatch) {
+            try {
+                for (int index = 0; index < messageCount; ++index) {
+                    var messageDto = messageList.get(index);
+                    if (!isSized) {
+                        System.out.println("!!! SENDING " + (index + 1) + " MESSAGE !!!");
+                    }
+                    kafkaSender.sendTransactionalMessage(COMMON_TOPIC, messageDto);
                 }
-                File file = File.createTempFile("file" + index + "_",
-                        fileName.substring(fileName.length() - 4));
-
-                messageList.add(
-                        MessageDto.builder()
-                                .file(file)
-                                .id(Math.abs(ThreadLocalRandom.current().nextLong()))
-                                .version(Math.abs(ThreadLocalRandom.current().nextLong()) % 10 == 0 ?
-                                        MessageDto.Version.V2 : MessageDto.Version.V1)
-                                .build()
-                );
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
+        } else {
+            try {
+                int batchCount = NUMBER_OF_MESSAGES / NUMBER_OF_MESSAGES_IN_BATCH;
+                for (int index = 0; index < batchCount; ++index) {
+                    System.out.println("!!! SENDING " + NUMBER_OF_MESSAGES_IN_BATCH * index + "-" +
+                            NUMBER_OF_MESSAGES_IN_BATCH * (index + 1) + " MESSAGES !!!");
+                    sendMessagesNonMultithread(NUMBER_OF_MESSAGES_IN_BATCH, isSized, false);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
-        return messageList;
-    }
-
-    public List<MessageDto> generateSizedMessages(int messageCount) {
-        List<MessageDto> messageList = new ArrayList<>();
-        for (int index = 0; index < messageCount; ++index) {
-            String filepath = "/home/dtechs/Desktop/project/producer/src/main/resources/file_examples";
-            filepath +=
-                    (switch (Math.abs(ThreadLocalRandom.current().nextInt()) % 3) {
-                        case 0 -> "/test.mp4";
-                        case 1 -> "/test.jpg";
-                        case 2 -> "/test.txt";
-                        default -> ".err";
-                    });
-            File file = new File(filepath);
-
-            messageList.add(
-                    MessageDto.builder()
-                            .file(file)
-                            .id(Math.abs(ThreadLocalRandom.current().nextLong()))
-                            .version(Math.abs(ThreadLocalRandom.current().nextLong()) % 10 == 0 ?
-                                    MessageDto.Version.V2 : MessageDto.Version.V1)
-                    .build()
-            );
-        }
-        return messageList;
     }
 }
