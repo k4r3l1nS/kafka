@@ -13,6 +13,7 @@ public class MessageDto {
 
     private Long id;
     private File file;
+    private byte[] byteArray;
     private Version version;
 
     public enum Version {V1, V2}

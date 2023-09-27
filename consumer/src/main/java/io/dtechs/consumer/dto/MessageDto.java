@@ -12,6 +12,7 @@ import java.io.File;
 public class MessageDto {
 
     private Long id;
+    private byte[] byteArray;
     private File file;
     private Version version;
 
