@@ -46,20 +46,6 @@ public class MessageGeneratorService {
     public void sendMessages(boolean isMultithread, boolean isSized) {
 
         boolean inBatch = isSized;
-//        if (isSized) {
-//            if (isMultithread) {
-//                sendMessagesMultithread(NUMBER_OF_MESSAGES, isSized, inBatch);
-//            } else {
-//                sendMessagesNonMultithread(NUMBER_OF_MESSAGES, isSized, inBatch);
-//            }
-//        } else {
-//            if (isMultithread) {
-//                sendMessagesMultithread(NUMBER_OF_MESSAGES, isSized, inBatch);
-//            } else {
-//                sendMessagesNonMultithread(NUMBER_OF_MESSAGES, isSized, inBatch);
-//            }
-//        }
-//
         if (isMultithread) {
             sendMessagesMultithread(NUMBER_OF_MESSAGES, isSized, inBatch);
         } else {
